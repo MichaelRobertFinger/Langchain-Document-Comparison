@@ -1,7 +1,7 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from langchain.text_splitter import CharacterTextSplitter
-from langchain_openai import AzureChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains import LLMChain
 import os
@@ -38,13 +38,8 @@ def compare_documents(doc1_text, doc2_text, comparison_prompt):
 
     overall_similarity = sum(similarity_scores) / len(similarity_scores)
 
-    # Generate detailed comparison using Azure OpenAI GPT-4
-    llm = AzureChatOpenAI(
-    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-    api_version="2023-05-15",
-    deployment_name=os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"),
-    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-    )
+    # Generate detailed comparison using OpenAI GPT-4
+    llm = ChatOpenAI(model="gpt-4o-mini", openai_api_key=os.getenv("OPENAI_API_KEY"))
     prompt = ChatPromptTemplate.from_template(comparison_prompt + "\n\nDocument 1: {doc1}\n\nDocument 2: {doc2}")
     chain = LLMChain(llm=llm, prompt=prompt)
 
